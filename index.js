@@ -3,7 +3,9 @@ window.addEventListener('DOMContentLoaded', () => {
   HEIGHT = 1000
   WIDTH = 1000
 
-  NUMBER_OF_SNAKES = 100
+  SNAKE_PIXEL_SIZE = 20
+
+  NUMBER_OF_SNAKES = 20
   let snakes = [];
 
   //TODO:
@@ -31,8 +33,9 @@ window.addEventListener('DOMContentLoaded', () => {
     ]
 
     for (let i = 0; i < NUMBER_OF_SNAKES; i++) {
-      const randX = getRandomInt(WIDTH)
-      const randY = getRandomInt(HEIGHT)
+      //the random coordinate code ensures that while the snakes are randomly placed, they are still on a "grid"
+      const randX = getRandomInt(Math.floor(WIDTH / SNAKE_PIXEL_SIZE)) * SNAKE_PIXEL_SIZE
+      const randY = getRandomInt(Math.floor(HEIGHT / SNAKE_PIXEL_SIZE)) * SNAKE_PIXEL_SIZE
       const snakeColor = COLORS[i % COLORS.length]
       snakes.push(new Snake(randX, randY, HEIGHT, WIDTH, snakeColor))
     }
@@ -61,7 +64,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   makeSnakes()
-  setInterval(updateCanvas, 100)
+  setInterval(updateCanvas, 10)
 
 })
 
@@ -72,8 +75,9 @@ class Snake {
     this.stageHeight = height
     this.stageWidth = width
     this.color = color
-    this.width = 6
-    this.height = 6
+    this.width = SNAKE_PIXEL_SIZE
+    this.height = SNAKE_PIXEL_SIZE
+    this.outOfBoundsRange = 100
     this.maxLength = Math.max(5, this.getRandomInt(30))
     this.history = []
     this.direction = 0
@@ -99,22 +103,22 @@ class Snake {
   move() {
     //up
     if (this.direction == 0) {
-      if (this.x >= this.stageHeight - this.height) {this.direction = 2; return}
+      if (this.x >= this.stageHeight + this.outOfBoundsRange) {this.direction = 2; return}
       this.x += this.height
     }
     //right
     if (this.direction == 1) {
-      if (this.y >= this.stageWidth - this.width) {this.direction = 3; return}
+      if (this.y >= this.stageWidth + this.outOfBoundsRange) {this.direction = 3; return}
       this.y += this.width
     }
     //down
     if (this.direction == 2) {
-      if (this.x <= 0 + this.height) {this.direction = 0; return}
+      if (this.x <= 0 - this.outOfBoundsRange) {this.direction = 0; return}
       this.x -= this.height
     }
     //left
     if (this.direction == 3) {
-      if (this.y <= 0 + this.width) {this.direction = 1; return}
+      if (this.y <= 0 - this.outOfBoundsRange) {this.direction = 1; return}
       this.y -= this.width
     }
   }
