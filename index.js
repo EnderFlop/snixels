@@ -6,6 +6,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   //TODO:
   //add the dithering effect from Hypnospace Outlaw
+  //  take chunks out of the cube? figure out the pattern of dithering and start clearRect'ing 1x1 pixels. Maybe have adverse effects if head size changes. Can we use a mask?
+  //add delay slash stagger effect from HO
   //check snake collision? not really neccesary i think
   //make canvas bigger than screen so snakes move in and out. If on mirror, maybe it's fine to have the whole area enclosed? 
   //  it might look weird for things to blip in and out of existence.
@@ -43,7 +45,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext("2d");
     
     //draw background slash reset frame
-    ctx.fillStyle = `rgb(128, 128, 128)`
+    ctx.fillStyle = `rgb(68, 68, 68)`
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     snakes.forEach((snake) => {
