@@ -2,6 +2,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   HEIGHT = 1000
   WIDTH = 1000
+
+  NUMBER_OF_SNAKES = 100
   let snakes = [];
 
   //TODO:
@@ -28,7 +30,7 @@ window.addEventListener('DOMContentLoaded', () => {
       "255, 155, 155",
     ]
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < NUMBER_OF_SNAKES; i++) {
       const randX = getRandomInt(WIDTH)
       const randY = getRandomInt(HEIGHT)
       const snakeColor = COLORS[i % COLORS.length]
@@ -72,7 +74,7 @@ class Snake {
     this.color = color
     this.width = 6
     this.height = 6
-    this.maxLength = 10
+    this.maxLength = Math.max(5, this.getRandomInt(30))
     this.history = []
     this.direction = 0
   }
