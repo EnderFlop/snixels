@@ -1,0 +1,39 @@
+body {
+  height: 100%; 
+  overflow: hidden; 
+  margin: 0;
+}
+
+#menu {
+  position: absolute; 
+  top: 20px; 
+  left: 20px;
+  opacity: 0.05;
+  padding: 10px;
+}
+
+#menu:hover {
+  opacity: 1;
+}
+
+#reset {
+  margin-right: 10px
+}
+
+#preset-row {
+  margin-top: 10px;
+}
+
+#presets {
+  margin-top: 0px;
+}
+
+#presets button {
+  margin-top: 0px;
+}
+
+#shameless-plug {
+  position: absolute;
+  right: 10px;
+}
+

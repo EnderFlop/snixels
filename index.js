@@ -19,19 +19,76 @@ window.addEventListener('DOMContentLoaded', () => {
   //CHANGE THESE VALUES
   let NUMBER_OF_SNAKES = 100
   let SCALE = 1;
+  let INTERVAL = 100;
   let DO_DITHER = true;
+  let FADE_IN = true;
+  MIN_SIZE = 19;
+  MAX_SIZE = 19;
 
-  // small: snakes=100~200, scale=1
-  // Hypnospace: snakes=10, scale=8
+  PRESETS = {
+    "Default": {
+      snakeCount: 100,
+      scale: 1,
+      interval: 100,
+      do_dither: true,
+      fade_in: true,
+      minSize: 19,
+      maxSize: 19
+    },
+    "Hypnospace": {
+      snakeCount: 10,
+      scale: 8,
+      interval: 500,
+      do_dither: true,
+      fade_in: false,
+      minSize: 4,
+      maxSize: 19
+    },
+    "Chaos" : {
+      snakeCount: 5000,
+      scale: 1,
+      interval: 1,
+      do_dither: false,
+      fade_in: false,
+      minSize: 3,
+      maxSize: 19
+    },
+    "Raceway" : {
+      snakeCount: 100,
+      scale: 5,
+      interval: 20,
+      do_dither: true,
+      fade_in: false,
+      minSize: 6,
+      maxSize: 19
+    },
+    "Ants": {
+      snakeCount: 10000,
+      scale: 0.1,
+      interval: 1,
+      do_dither: false,
+      fade_in: false,      
+      minSize: 1,
+      maxSize: 19
+    },
+    "Spaghetti": {
+      snakeCount: 200,
+      scale: 1,
+      interval: 1,
+      do_dither: false,
+      fade_in: false,      
+      minSize: 500,
+      maxSize: 500
+    }
+  }
 
   SNAKE_PIXEL_SIZE = 8;
-  EFFECTIVE_SIZE = SNAKE_PIXEL_SIZE * SCALE
+  EFFECTIVE_SIZE = getEffectiveSize();
   BACKGROUND_RGB = `rgb(68, 68, 68)`
   
   let snakes = [];
 
   //TODO:
-  //add levers on the site to customize it yourself?
   // adjust code so instead of turning pixels background color, we actually make it transparent
 
   function makeSnakes() {
@@ -62,7 +119,12 @@ window.addEventListener('DOMContentLoaded', () => {
     return Math.floor(Math.random() * max)
   }
 
+  function getEffectiveSize() {
+    return SNAKE_PIXEL_SIZE * SCALE
+  }
+
   function updateCanvas() {
+    console.log(NUMBER_OF_SNAKES, SCALE, INTERVAL, DO_DITHER, FADE_IN, MIN_SIZE, MAX_SIZE)
     const canvas = document.getElementById("container");
     const ctx = canvas.getContext("2d");
     
@@ -74,10 +136,11 @@ window.addEventListener('DOMContentLoaded', () => {
       snake.main()
       resetPenToSnakeColor(ctx, snake)
       ctx.fillRect(snake.x, snake.y, EFFECTIVE_SIZE, EFFECTIVE_SIZE)
-      level = 19
-      //level = snake.history.length - 1
-      // ^ 19 gives awesome fade-in effect. only works for snakes of length 19. 
-      //for a more regular look, use "level = snake.history.length - 1"
+      if (FADE_IN) {
+        level = snake.maxLength
+      } else {
+        level = snake.history.length - 1
+      }
       snake.history.forEach((history) => {
         ctx.fillRect(history.x, history.y, EFFECTIVE_SIZE, EFFECTIVE_SIZE)
         if (DO_DITHER) {
@@ -106,10 +169,135 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = `rgb(${snake.color})`
   }
 
-  makeSnakes()
-  updateCanvas()
-  setInterval(updateCanvas, 100)
+  //only accepts numbers as input.
+  function validateInput(input) {
+    return !isNaN(input) && input != ""
+  }
 
+  function setupButtons() {
+    const resetButton = document.getElementById("reset")
+    resetButton.onclick = () => {
+      //retrieve input values and change globals
+
+      const snakeInput = document.getElementById("snakeNumber")
+      NUMBER_OF_SNAKES = (validateInput(snakeInput.value) ? snakeInput.value : snakeInput.placeholder)
+
+      const scaleInput = document.getElementById("scale")
+      SCALE = (validateInput(scaleInput.value) ? scaleInput.value : scaleInput.placeholder)
+
+      const intervalInput = document.getElementById("interval")
+      INTERVAL = (validateInput(intervalInput.value) ? intervalInput.value : intervalInput.placeholder)
+
+      const minSizeInput = document.getElementById("min")
+      MIN_SIZE = (validateInput(minSizeInput.value) ? minSizeInput.value : minSizeInput.placeholder)
+
+      const maxSizeInput = document.getElementById("max")
+      MAX_SIZE = (validateInput(maxSizeInput.value) ? maxSizeInput.value : maxSizeInput.placeholder)
+
+      main();
+    }
+
+    const maxSizeInput = document.getElementById("max")
+    maxSizeInput.addEventListener("change", (event) => {
+      const val = event.target.value
+      if (DO_DITHER && val > 19) {
+        maxSizeInput.value = 19
+        alert("MAX-SIZE cannot exceed 19 with DITHER on.")
+      }
+    })
+
+    const minSizeInput = document.getElementById("min")
+    minSizeInput.addEventListener("change", (event) => {
+      const val = event.target.value
+      if (val < 0) {
+        minSizeInput.value = 1
+        alert("MIN-SIZE cannot be below 0.")
+      }
+      else if (val > maxSizeInput.value) {
+        minSizeInput.value = maxSizeInput.value
+        alert("MIN-SIZE cannot exceed MAX-SIZE.")
+      }
+    })
+
+    const ditherButton = document.getElementById("dither")
+    ditherButton.onclick = () => {
+      if (!DO_DITHER && maxSizeInput.value > 19) {
+        alert("DITHER cannot be turned on while MAX-SIZE is over 19.")
+      } else {
+        DO_DITHER = !DO_DITHER;
+        ditherButton.innerHTML = "DITHER: " + (DO_DITHER ? "TRUE" : "FALSE") //yes, i know this is a little stupid. I want it to be ALL CAPS though.  
+      }
+
+      adjustFadeButton()
+    }
+    
+    const fadeButton = document.getElementById("fade-in")
+    fadeButton.onclick = () => {
+      FADE_IN = !FADE_IN;
+      fadeButton.innerHTML = "FADE-IN: " + (FADE_IN ? "TRUE" : "FALSE")
+    }
+
+    //load presets
+    presetBox = document.getElementById("presets")
+    presetBox.innerHTML = ""
+    for (const [presetName, preset] of Object.entries(PRESETS)) {
+      const newButton = document.createElement("button")
+      newButton.classList.add("preset")
+      newButton.innerHTML = presetName
+
+      newButton.onclick = () => {
+        NUMBER_OF_SNAKES = preset.snakeCount
+        SCALE = preset.scale
+        INTERVAL = preset.interval
+        DO_DITHER = preset.do_dither
+        FADE_IN = preset.fade_in
+        MIN_SIZE = preset.minSize
+        MAX_SIZE = preset.maxSize
+
+        //clear fields and change placeholders to preset values
+        document.getElementById("snakeNumber").value = ""
+        document.getElementById("snakeNumber").placeholder = preset.snakeCount
+        document.getElementById("scale").value = ""
+        document.getElementById("scale").placeholder = preset.scale
+        document.getElementById("interval").value = ""
+        document.getElementById("interval").placeholder = preset.interval
+        document.getElementById("min").value = ""
+        document.getElementById("min").placeholder = preset.minSize
+        document.getElementById("max").value = ""
+        document.getElementById("max").placeholder = preset.maxSize
+        document.getElementById("dither").innerHTML = "DITHER: " + (DO_DITHER ? "TRUE" : "FALSE")
+        adjustFadeButton()
+
+        main()
+      }
+
+      presetBox.appendChild(newButton)
+    }
+  }
+
+  function adjustFadeButton() {
+    const fadeButton = document.getElementById("fade-in")
+    if (!DO_DITHER) {
+      fadeButton.disabled = true
+      fadeButton.innerHTML = "FADE-IN: DISABLED"
+    } else {
+      fadeButton.disabled = false
+      fadeButton.innerHTML = "FADE-IN: " + (FADE_IN ? "TRUE" : "FALSE")
+    }
+  }
+
+
+  function main() {
+    clearInterval(timeout);
+    EFFECTIVE_SIZE = getEffectiveSize()
+    makeSnakes()
+    updateCanvas()
+    timeout = setInterval(updateCanvas, INTERVAL)
+    setupButtons()
+  }
+  
+  let timeout;
+  main()
 })
 
 class Snake {
@@ -120,7 +308,7 @@ class Snake {
     this.stageWidth = width
     this.color = color
     this.outOfBoundsRange = WIDTH * 0.5
-    this.maxLength = 19
+    this.maxLength = Math.max(MIN_SIZE, this.getRandomInt(MAX_SIZE))
     this.history = []
     this.direction = 0
   }

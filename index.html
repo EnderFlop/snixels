@@ -3,11 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>snixels</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/98.css" />
+  <title>SNIXELS</title>
 </head>
-<body style="height: 100%; overflow: hidden; margin: 0;">
+<body>
   <canvas id="container"></canvas>
-  <!-- <button id="refresh" style="position: absolute; top: 0px; left: 0px;">Refresh</button> -->
+  <div class="window" id="menu">
+    <div class="field-row">
+      <label for="snakeNumber"># OF SNAKES</label>
+      <input id="snakeNumber" type="text" placeholder="100"/>
+      <a id="shameless-plug" href=https://github.com/EnderFlop>
+        Made by EnderFlop
+      </a>
+    </div>
+    <div class="field-row">
+      <label for="scale">SCALE</label>
+      <input id="scale" type="text" placeholder="1"/>
+    </div>
+    <div class="field-row">
+      <label for="interval">UPDATE RATE (ms)</label>
+      <input id="interval" type="text" placeholder="100"/>
+    </div>
+    <div class="field-row">
+      <label for="min">MIN-SIZE</label>
+      <input id="min" type="text" placeholder="19"/>
+      <label for="max">MAX-SIZE</label>
+      <input id="max" type="text" placeholder="19"/>
+    </div>
+    <button id="reset">APPLY</button>
+    <button id="dither">DITHER: TRUE</button>
+    <button id="fade-in">FADE-IN: TRUE</button>
+    
+    <div class="field-row-stacked" id="preset-row">
+      <label for="presets">Presets</label>
+      <div id="presets"></div>
+    </div>
+  </div>
 </body>
 <script src="./index.js"></script>
 </html>
