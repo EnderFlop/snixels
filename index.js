@@ -1,11 +1,15 @@
 window.addEventListener('DOMContentLoaded', () => {
 
-  HEIGHT = 1000
-  WIDTH = 1000
+  WIDTH = window.innerWidth
+  HEIGHT =  window.innerHeight
 
-  SNAKE_PIXEL_SIZE = 20
+  const canvas = document.getElementById("container");
+  canvas.width = WIDTH
+  canvas.height = HEIGHT
 
-  NUMBER_OF_SNAKES = 20
+  SNAKE_PIXEL_SIZE = Math.floor(window.innerWidth / 25);
+
+  NUMBER_OF_SNAKES = 10
   let snakes = [];
 
   //TODO:
@@ -64,7 +68,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   makeSnakes()
-  setInterval(updateCanvas, 10)
+  setInterval(updateCanvas, 100)
 
 })
 
@@ -77,8 +81,8 @@ class Snake {
     this.color = color
     this.width = SNAKE_PIXEL_SIZE
     this.height = SNAKE_PIXEL_SIZE
-    this.outOfBoundsRange = 100
-    this.maxLength = Math.max(5, this.getRandomInt(30))
+    this.outOfBoundsRange = WIDTH * 0.5
+    this.maxLength = Math.max(3, this.getRandomInt(10))
     this.history = []
     this.direction = 0
   }
@@ -102,24 +106,29 @@ class Snake {
 
   move() {
     //up
+    
     if (this.direction == 0) {
-      if (this.x >= this.stageHeight + this.outOfBoundsRange) {this.direction = 2; return}
+      if (this.x >= this.stageWidth + this.outOfBoundsRange) { this.direction = 2; return}
       this.x += this.height
+      return
     }
     //right
     if (this.direction == 1) {
-      if (this.y >= this.stageWidth + this.outOfBoundsRange) {this.direction = 3; return}
+      if (this.y >= this.stageHeight + this.outOfBoundsRange) {this.direction = 3; return}
       this.y += this.width
+      return
     }
     //down
     if (this.direction == 2) {
       if (this.x <= 0 - this.outOfBoundsRange) {this.direction = 0; return}
       this.x -= this.height
+      return
     }
     //left
     if (this.direction == 3) {
       if (this.y <= 0 - this.outOfBoundsRange) {this.direction = 1; return}
       this.y -= this.width
+      return
     }
   }
 
