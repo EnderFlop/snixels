@@ -24,17 +24,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let snakes = [];
 
   //TODO:
-  //add the dithering effect from Hypnospace Outlaw
-  //  take chunks out of the cube? figure out the pattern of dithering and start clearRect'ing 1x1 pixels. Maybe have adverse effects if head size changes. Can we use a mask?
-  //add delay slash stagger effect from HO
-  //check snake collision? not really neccesary i think
-  //make canvas bigger than screen so snakes move in and out. If on mirror, maybe it's fine to have the whole area enclosed? 
-  //  it might look weird for things to blip in and out of existence.
-  //  maybe if i make a wallpaper engine version i can do the big canvas from the game.
-  //figure out how to put on mirror.
-
-  // https://pixelparmesan.com/content/images/2021/01/dither_patterns_3x-1.png
-  //  do some one-time work to make bitmasks for the pixels. each dither-er has a pattern to it. make the bitmasks scaleable depending on pixel size. or just choose a hard pixel size.
+  //make tail draw in reverse order so more "full" parts of the snake overlap the lesser parts
 
   function makeSnakes() {
     const COLORS = [
@@ -75,11 +65,10 @@ window.addEventListener('DOMContentLoaded', () => {
       snake.main()
       resetPenToSnakeColor(ctx, snake)
       ctx.fillRect(snake.x, snake.y, SNAKE_PIXEL_SIZE, SNAKE_PIXEL_SIZE)
-      const backwardHistory = snake.history.toReversed()
-      level = 0;
-      backwardHistory.forEach((history) => {
+      level = 19;
+      snake.history.forEach((history) => {
         dither(level, history, ctx, snake)
-        level++;
+        level--;
       })
     })
     
