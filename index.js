@@ -17,6 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
   canvas.height = HEIGHT
 
   SNAKE_PIXEL_SIZE = 8;
+  SCALE = 1;
+  EFFECTIVE_SIZE = SNAKE_PIXEL_SIZE * SCALE
 
   BACKGROUND_RGB = `rgb(68, 68, 68)`
 
@@ -27,6 +29,7 @@ window.addEventListener('DOMContentLoaded', () => {
   //make tail draw in reverse order so more "full" parts of the snake overlap the lesser parts
 
   function makeSnakes() {
+    snakes = []
     const COLORS = [
       "50, 202, 205",
       "255, 255, 159",
@@ -42,8 +45,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     for (let i = 0; i < NUMBER_OF_SNAKES; i++) {
       //the random coordinate code ensures that while the snakes are randomly placed, they are still on a "grid"
-      const randX = getRandomInt(Math.floor(WIDTH / SNAKE_PIXEL_SIZE)) * SNAKE_PIXEL_SIZE
-      const randY = getRandomInt(Math.floor(HEIGHT / SNAKE_PIXEL_SIZE)) * SNAKE_PIXEL_SIZE
+      const randX = getRandomInt(Math.floor(WIDTH / EFFECTIVE_SIZE)) * EFFECTIVE_SIZE
+      const randY = getRandomInt(Math.floor(HEIGHT / EFFECTIVE_SIZE)) * EFFECTIVE_SIZE
       const snakeColor = COLORS[i % COLORS.length]
       snakes.push(new Snake(randX, randY, HEIGHT, WIDTH, snakeColor))
     }
@@ -64,8 +67,11 @@ window.addEventListener('DOMContentLoaded', () => {
     snakes.forEach((snake) => {
       snake.main()
       resetPenToSnakeColor(ctx, snake)
-      ctx.fillRect(snake.x, snake.y, SNAKE_PIXEL_SIZE, SNAKE_PIXEL_SIZE)
-      level = 19;
+      ctx.fillRect(snake.x, snake.y, EFFECTIVE_SIZE, EFFECTIVE_SIZE)
+      level = 19
+      //level = snake.history.length - 1
+      // ^ 19 gives awesome fade-in effect. only works for snakes of length 19. 
+      //for a more regular look, use "level = snake.history.length - 1"
       snake.history.forEach((history) => {
         dither(level, history, ctx, snake)
         level--;
@@ -75,14 +81,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function dither(level, history, ctx, snake) {
-    ctx.fillRect(history.x, history.y, SNAKE_PIXEL_SIZE, SNAKE_PIXEL_SIZE)
+    ctx.fillRect(history.x, history.y, EFFECTIVE_SIZE, EFFECTIVE_SIZE)
     dither_mask = DITHERS[level]
     ctx.fillStyle = BACKGROUND_RGB
     for (let pixel = 0; pixel < dither_mask.length; pixel++) {
       if( dither_mask[pixel] == 255 ) {
-        const currentX = history.x + (pixel % SNAKE_PIXEL_SIZE)
-        const currentY = history.y + Math.floor(pixel / SNAKE_PIXEL_SIZE)
-        ctx.fillRect(currentX, currentY, 1, 1)
+        const currentX = history.x + (pixel * SCALE % EFFECTIVE_SIZE)
+        const currentY = history.y + Math.floor(pixel * SCALE / EFFECTIVE_SIZE) * SCALE
+        ctx.fillRect(currentX, currentY, SCALE, SCALE)
       }
     }
     resetPenToSnakeColor(ctx, snake)
@@ -133,25 +139,25 @@ class Snake {
     
     if (this.direction == 0) {
       if (this.x >= this.stageWidth + this.outOfBoundsRange) { this.direction = 2; return}
-      this.x += SNAKE_PIXEL_SIZE
+      this.x += EFFECTIVE_SIZE
       return
     }
     //right
     if (this.direction == 1) {
       if (this.y >= this.stageHeight + this.outOfBoundsRange) {this.direction = 3; return}
-      this.y += SNAKE_PIXEL_SIZE
+      this.y += EFFECTIVE_SIZE
       return
     }
     //down
     if (this.direction == 2) {
       if (this.x <= 0 - this.outOfBoundsRange) {this.direction = 0; return}
-      this.x -= SNAKE_PIXEL_SIZE
+      this.x -= EFFECTIVE_SIZE
       return
     }
     //left
     if (this.direction == 3) {
       if (this.y <= 0 - this.outOfBoundsRange) {this.direction = 1; return}
-      this.y -= SNAKE_PIXEL_SIZE
+      this.y -= EFFECTIVE_SIZE
       return
     }
   }
