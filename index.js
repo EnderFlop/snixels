@@ -16,17 +16,23 @@ window.addEventListener('DOMContentLoaded', () => {
   canvas.width = WIDTH
   canvas.height = HEIGHT
 
+  //CHANGE THESE VALUES
+  let NUMBER_OF_SNAKES = 100
+  let SCALE = 1;
+  let DO_DITHER = true;
+
+  // small: snakes=100~200, scale=1
+  // Hypnospace: snakes=10, scale=8
+
   SNAKE_PIXEL_SIZE = 8;
-  SCALE = 1;
   EFFECTIVE_SIZE = SNAKE_PIXEL_SIZE * SCALE
-
   BACKGROUND_RGB = `rgb(68, 68, 68)`
-
-  NUMBER_OF_SNAKES = 100
+  
   let snakes = [];
 
   //TODO:
-  //make tail draw in reverse order so more "full" parts of the snake overlap the lesser parts
+  //add levers on the site to customize it yourself?
+  // adjust code so instead of turning pixels background color, we actually make it transparent
 
   function makeSnakes() {
     snakes = []
@@ -73,7 +79,10 @@ window.addEventListener('DOMContentLoaded', () => {
       // ^ 19 gives awesome fade-in effect. only works for snakes of length 19. 
       //for a more regular look, use "level = snake.history.length - 1"
       snake.history.forEach((history) => {
-        dither(level, history, ctx, snake)
+        ctx.fillRect(history.x, history.y, EFFECTIVE_SIZE, EFFECTIVE_SIZE)
+        if (DO_DITHER) {
+          dither(level, history, ctx, snake)
+        }
         level--;
       })
     })
@@ -81,7 +90,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function dither(level, history, ctx, snake) {
-    ctx.fillRect(history.x, history.y, EFFECTIVE_SIZE, EFFECTIVE_SIZE)
     dither_mask = DITHERS[level]
     ctx.fillStyle = BACKGROUND_RGB
     for (let pixel = 0; pixel < dither_mask.length; pixel++) {
