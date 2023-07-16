@@ -9,7 +9,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   SNAKE_PIXEL_SIZE = Math.floor(window.innerWidth / 25);
 
-  NUMBER_OF_SNAKES = 10
+  DITHER_LEVEL = 10000 //must be over like a thousand for the head to be solid.
+
+  NUMBER_OF_SNAKES = 50
   let snakes = [];
 
   //TODO:
@@ -22,11 +24,14 @@ window.addEventListener('DOMContentLoaded', () => {
   //  maybe if i make a wallpaper engine version i can do the big canvas from the game.
   //figure out how to put on mirror.
 
+  // https://pixelparmesan.com/content/images/2021/01/dither_patterns_3x-1.png
+  //  do some one-time work to make bitmasks for the pixels. each dither-er has a pattern to it. make the bitmasks scaleable depending on pixel size. or just choose a hard pixel size.
+
   function makeSnakes() {
     const COLORS = [
+      "50, 202, 205",
       "255, 255, 159",
       "255, 182, 173",
-      "50, 202, 205",
       "205, 160, 203",
       "166, 234, 209",
       "253, 244, 245",
@@ -59,15 +64,37 @@ window.addEventListener('DOMContentLoaded', () => {
 
     snakes.forEach((snake) => {
       snake.main()
-      ctx.fillStyle = `rgb(${snake.color})`
-      ctx.fillRect(snake.x, snake.y, snake.width, snake.height)
-      snake.history.forEach((history) => {
-        ctx.fillRect(history.x, history.y, snake.width, snake.height)
+      resetPen(ctx, snake)
+      ctx.fillRect(snake.x, snake.y, SNAKE_PIXEL_SIZE, SNAKE_PIXEL_SIZE)
+      let level = DITHER_LEVEL
+      const backwardHistory = snake.history.toReversed()
+      backwardHistory.forEach((history) => {
+        dither(level, history, ctx, snake)
+        level = Math.max(1, Math.floor(level / 3));   
       })
     })
+    
+  }
+
+  function dither(level, history, ctx, snake) {
+    ctx.fillRect(history.x, history.y, SNAKE_PIXEL_SIZE, SNAKE_PIXEL_SIZE)
+    ctx.fillStyle = `rgb(68, 68, 68)`
+    for (let i = 1; i < Math.pow(SNAKE_PIXEL_SIZE, 2); i++) {
+      if (i % level == 0) {
+        const currentX = history.x + (i % SNAKE_PIXEL_SIZE)
+        const currentY = history.y + Math.floor(i / SNAKE_PIXEL_SIZE)
+        ctx.fillRect(currentX, currentY, 2, 2)
+      }
+    }
+    resetPen(ctx, snake)
+  }
+
+  function resetPen(ctx, snake) {
+    ctx.fillStyle = `rgb(${snake.color})`
   }
 
   makeSnakes()
+  updateCanvas()
   setInterval(updateCanvas, 100)
 
 })
@@ -79,10 +106,8 @@ class Snake {
     this.stageHeight = height
     this.stageWidth = width
     this.color = color
-    this.width = SNAKE_PIXEL_SIZE
-    this.height = SNAKE_PIXEL_SIZE
     this.outOfBoundsRange = WIDTH * 0.5
-    this.maxLength = Math.max(3, this.getRandomInt(10))
+    this.maxLength = Math.max(6, this.getRandomInt(10))
     this.history = []
     this.direction = 0
   }
@@ -109,25 +134,25 @@ class Snake {
     
     if (this.direction == 0) {
       if (this.x >= this.stageWidth + this.outOfBoundsRange) { this.direction = 2; return}
-      this.x += this.height
+      this.x += SNAKE_PIXEL_SIZE
       return
     }
     //right
     if (this.direction == 1) {
       if (this.y >= this.stageHeight + this.outOfBoundsRange) {this.direction = 3; return}
-      this.y += this.width
+      this.y += SNAKE_PIXEL_SIZE
       return
     }
     //down
     if (this.direction == 2) {
       if (this.x <= 0 - this.outOfBoundsRange) {this.direction = 0; return}
-      this.x -= this.height
+      this.x -= SNAKE_PIXEL_SIZE
       return
     }
     //left
     if (this.direction == 3) {
       if (this.y <= 0 - this.outOfBoundsRange) {this.direction = 1; return}
-      this.y -= this.width
+      this.y -= SNAKE_PIXEL_SIZE
       return
     }
   }
