@@ -1,5 +1,15 @@
 window.addEventListener('DOMContentLoaded', () => {
 
+  //fade out tooltip
+  var flair = document.getElementById("menu-flair");
+  flair.style.opacity = 4
+  setInterval(function() {
+    console.log(flair.style.opacity)
+      if (flair.style.opacity > 0) {
+        flair.style.opacity -= 0.1
+      }
+  }, 25);
+
   WIDTH = window.innerWidth
   HEIGHT =  window.innerHeight
 
