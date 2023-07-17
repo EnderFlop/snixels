@@ -32,6 +32,15 @@ body {
   margin-top: 0px;
 }
 
+#colors {
+  margin-top: 0px;
+}
+
+
+#colors button {
+  margin-top: 0px;
+}
+
 #menu-text {
   position: absolute;
   right: 10px;
