@@ -24,7 +24,7 @@ window.addEventListener('DOMContentLoaded', () => {
   let FADE_IN = true;
   MIN_SIZE = 19;
   MAX_SIZE = 19;
-  COLOR_PROFILE = "Default"
+  COLOR_PROFILE = "Original"
 
   SNAKE_PRESETS = {
     "Default": {
@@ -83,8 +83,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  //FIRST VALUE IN EACH LIST IS BACKGROUND COLOR
   COLOR_PRESETS = {
-    "Default": [
+    "Original": [
+      "68, 68, 68",
       "50, 202, 205",
       "255, 255, 159",
       "255, 182, 173",
@@ -96,11 +98,20 @@ window.addEventListener('DOMContentLoaded', () => {
       "192, 219, 234",
       "255, 155, 155",
     ],
+    "Old School": [
+      "0, 0, 0",
+      "0, 0, 255",
+      "0, 255, 0",
+      "255, 0, 0",
+      "255, 0, 255",
+      "255, 255, 0",
+      "0, 255, 255",
+      "255, 255, 255" 
+    ]
   }
 
   SNAKE_PIXEL_SIZE = 8;
   EFFECTIVE_SIZE = getEffectiveSize();
-  BACKGROUND_RGB = `rgb(68, 68, 68)`
   
   let snakes = [];
 
@@ -114,7 +125,8 @@ window.addEventListener('DOMContentLoaded', () => {
       //the random coordinate code ensures that while the snakes are randomly placed, they are still on a "grid"
       const randX = getRandomInt(Math.floor(WIDTH / EFFECTIVE_SIZE)) * EFFECTIVE_SIZE
       const randY = getRandomInt(Math.floor(HEIGHT / EFFECTIVE_SIZE)) * EFFECTIVE_SIZE
-      const snakeColor = COLOR_PRESETS[COLOR_PROFILE][i % COLOR_PRESETS[COLOR_PROFILE].length]
+      const colorList = COLOR_PRESETS[COLOR_PROFILE].slice(1)
+      const snakeColor = colorList[i % colorList.length]
       snakes.push(new Snake(randX, randY, HEIGHT, WIDTH, snakeColor))
     }
   }
@@ -128,12 +140,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateCanvas() {
-    console.log(NUMBER_OF_SNAKES, SCALE, INTERVAL, DO_DITHER, FADE_IN, MIN_SIZE, MAX_SIZE)
     const canvas = document.getElementById("container");
     const ctx = canvas.getContext("2d");
     
     //draw background slash reset frame
-    ctx.fillStyle = BACKGROUND_RGB
+    resetPenToBackgroundColor(ctx)
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     snakes.forEach((snake) => {
@@ -158,7 +169,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function dither(level, history, ctx, snake) {
     dither_mask = DITHERS[level]
-    ctx.fillStyle = BACKGROUND_RGB
+    resetPenToBackgroundColor(ctx)
     for (let pixel = 0; pixel < dither_mask.length; pixel++) {
       if( dither_mask[pixel] == 255 ) {
         const currentX = history.x + (pixel * SCALE % EFFECTIVE_SIZE)
@@ -171,6 +182,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function resetPenToSnakeColor(ctx, snake) {
     ctx.fillStyle = `rgb(${snake.color})`
+  }
+
+  function resetPenToBackgroundColor(ctx) {
+    ctx.fillStyle = `rgb(${COLOR_PRESETS[COLOR_PROFILE][0]})`
   }
 
   //only accepts numbers as input.
@@ -285,6 +300,25 @@ window.addEventListener('DOMContentLoaded', () => {
       }
 
       presetBox.appendChild(newButton)
+    }
+
+    //load color profile buttons
+    colorPresets = document.getElementById("colors")
+    colorPresets.innerHTML = ""
+    for (const [presetName, colorList] of Object.entries(COLOR_PRESETS)) {
+      const newButton = document.createElement("button")
+      newButton.classList.add("colorButton")
+      newButton.innerHTML = presetName
+
+      newButton.onclick = () => {
+        COLOR_PROFILE = presetName
+        snakes.forEach((snake) => {
+          const randomColor = colorList[getRandomInt(colorList.length - 1) + 1] //ensures index 0 (background) can't be hit.
+          snake.color = randomColor
+        })
+      }
+
+      colorPresets.appendChild(newButton)
     }
   }
 
