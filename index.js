@@ -376,7 +376,7 @@ class Snake {
     this.stageHeight = height
     this.stageWidth = width
     this.color = color
-    this.outOfBoundsRange = WIDTH * 0.5
+    this.outOfBoundsRange = WIDTH * 0.2
     this.maxLength = Math.max(MIN_SIZE, this.getRandomInt(MAX_SIZE))
     this.history = []
     this.direction = 0
