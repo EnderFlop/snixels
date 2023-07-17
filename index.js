@@ -24,8 +24,9 @@ window.addEventListener('DOMContentLoaded', () => {
   let FADE_IN = true;
   MIN_SIZE = 19;
   MAX_SIZE = 19;
+  COLOR_PROFILE = "Default"
 
-  PRESETS = {
+  SNAKE_PRESETS = {
     "Default": {
       snakeCount: 100,
       scale: 1,
@@ -82,6 +83,21 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  COLOR_PRESETS = {
+    "Default": [
+      "50, 202, 205",
+      "255, 255, 159",
+      "255, 182, 173",
+      "205, 160, 203",
+      "166, 234, 209",
+      "253, 244, 245",
+      "232, 160, 191",
+      "186, 144, 198",
+      "192, 219, 234",
+      "255, 155, 155",
+    ],
+  }
+
   SNAKE_PIXEL_SIZE = 8;
   EFFECTIVE_SIZE = getEffectiveSize();
   BACKGROUND_RGB = `rgb(68, 68, 68)`
@@ -93,24 +109,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function makeSnakes() {
     snakes = []
-    const COLORS = [
-      "50, 202, 205",
-      "255, 255, 159",
-      "255, 182, 173",
-      "205, 160, 203",
-      "166, 234, 209",
-      "253, 244, 245",
-      "232, 160, 191",
-      "186, 144, 198",
-      "192, 219, 234",
-      "255, 155, 155",
-    ]
 
     for (let i = 0; i < NUMBER_OF_SNAKES; i++) {
       //the random coordinate code ensures that while the snakes are randomly placed, they are still on a "grid"
       const randX = getRandomInt(Math.floor(WIDTH / EFFECTIVE_SIZE)) * EFFECTIVE_SIZE
       const randY = getRandomInt(Math.floor(HEIGHT / EFFECTIVE_SIZE)) * EFFECTIVE_SIZE
-      const snakeColor = COLORS[i % COLORS.length]
+      const snakeColor = COLOR_PRESETS[COLOR_PROFILE][i % COLOR_PRESETS[COLOR_PROFILE].length]
       snakes.push(new Snake(randX, randY, HEIGHT, WIDTH, snakeColor))
     }
   }
@@ -249,7 +253,7 @@ window.addEventListener('DOMContentLoaded', () => {
     //load presets
     presetBox = document.getElementById("presets")
     presetBox.innerHTML = ""
-    for (const [presetName, preset] of Object.entries(PRESETS)) {
+    for (const [presetName, preset] of Object.entries(SNAKE_PRESETS)) {
       const newButton = document.createElement("button")
       newButton.classList.add("preset")
       newButton.innerHTML = presetName
