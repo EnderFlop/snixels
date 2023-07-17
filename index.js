@@ -198,22 +198,31 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const maxSizeInput = document.getElementById("max")
+    const minSizeInput = document.getElementById("min")
+
     maxSizeInput.addEventListener("change", (event) => {
-      const val = event.target.value
+      let val = event.target.value
+      if (!validateInput(val)) { return; }
+      val = Number.parseInt(val)
       if (DO_DITHER && val > 19) {
         maxSizeInput.value = 19
         alert("MAX-SIZE cannot exceed 19 with DITHER on.")
       }
+      else if (val < Number.parseInt(minSizeInput.value)) {
+        maxSizeInput.value = minSizeInput.value
+        alert("MAX-SIZE cannot be below MIN-SIZE")
+      }
     })
 
-    const minSizeInput = document.getElementById("min")
     minSizeInput.addEventListener("change", (event) => {
-      const val = event.target.value
+      let val = event.target.value
+      if (!validateInput(val)) { return; }
+      val = Number.parseInt(val)
       if (val < 0) {
         minSizeInput.value = 1
         alert("MIN-SIZE cannot be below 0.")
       }
-      else if (val > maxSizeInput.value) {
+      else if (val > Number.parseInt(maxSizeInput.value) || (maxSizeInput.value == "" && val > Number.parseInt(maxSizeInput.placeholder))) {
         minSizeInput.value = maxSizeInput.value
         alert("MIN-SIZE cannot exceed MAX-SIZE.")
       }
@@ -221,7 +230,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const ditherButton = document.getElementById("dither")
     ditherButton.onclick = () => {
-      if (!DO_DITHER && maxSizeInput.value > 19) {
+      if (!DO_DITHER && Number.parseInt(maxSizeInput.value) > 19) {
         alert("DITHER cannot be turned on while MAX-SIZE is over 19.")
       } else {
         DO_DITHER = !DO_DITHER;
