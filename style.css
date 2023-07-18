@@ -4,11 +4,19 @@ body {
   margin: 0;
 }
 
+#settings {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 0;
+  opacity: 0.5;
+}
+
 #menu {
   position: absolute; 
-  top: 20px; 
-  left: 20px;
-  opacity: 0.05;
+  top: 16px; 
+  left: 16px;
+  opacity: 0;
   padding: 10px;
 }
 
