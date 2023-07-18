@@ -1,19 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
 
-  //fade in and out tooltip
-
-
-  async function handleFlair() {
-    var flair = document.getElementById("menu-flair");
-    flair.style.opacity = 0
-    await new Promise(r => setTimeout(r, 4000));
-    flair.style.opacity = 0.3
-    await new Promise(r => setTimeout(r, 3000));
-    flair.style.opacity = 0
-  }
-
-  handleFlair()
-
   WIDTH = window.innerWidth
   HEIGHT =  window.innerHeight
 
@@ -369,6 +355,20 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+    async function handleFlair() {
+      const flair = document.getElementById("menu-flair");
+
+      const menu = document.getElementById("menu");
+      const rect = menu.getBoundingClientRect()
+      const menuBottom = rect.height + rect.y
+      flair.style.top = menuBottom
+
+      flair.style.opacity = 0
+      await new Promise(r => setTimeout(r, 10000));
+      flair.style.opacity = 0.3
+      await new Promise(r => setTimeout(r, 5000));
+      flair.style.opacity = 0
+    }
 
   function main() {
     clearInterval(timeout);
@@ -379,6 +379,8 @@ window.addEventListener('DOMContentLoaded', () => {
     setupButtons()
   }
   
+  
+  handleFlair()
   let timeout;
   main()
 })
