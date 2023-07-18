@@ -48,9 +48,6 @@ body {
 
 #menu-flair {
   position: absolute;
-  left: 380px;
-  top: 125px;
-  width: 200px;
-  height: 200px;
-  opacity: 1;
+  left: 20px;
+  top: 260px;
 }

@@ -1,14 +1,18 @@
 window.addEventListener('DOMContentLoaded', () => {
 
-  //fade out tooltip
-  var flair = document.getElementById("menu-flair");
-  flair.style.opacity = 4
-  setInterval(function() {
-    console.log(flair.style.opacity)
-      if (flair.style.opacity > 0) {
-        flair.style.opacity -= 0.1
-      }
-  }, 25);
+  //fade in and out tooltip
+
+
+  async function handleFlair() {
+    var flair = document.getElementById("menu-flair");
+    flair.style.opacity = 0
+    await new Promise(r => setTimeout(r, 4000));
+    flair.style.opacity = 0.3
+    await new Promise(r => setTimeout(r, 3000));
+    flair.style.opacity = 0
+  }
+
+  handleFlair()
 
   WIDTH = window.innerWidth
   HEIGHT =  window.innerHeight
